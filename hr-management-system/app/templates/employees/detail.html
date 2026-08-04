@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}{{ employee.full_name }}{% endblock %}
+{% block content %}
+<h1>{{ employee.full_name }}</h1>
+<div class="card">
+  <p><strong>Code:</strong> {{ employee.employee_code }}</p>
+  <p><strong>Job Title:</strong> {{ employee.job_title }}</p>
+  <p><strong>Department:</strong> {{ employee.department.name if employee.department else "—" }}</p>
+  <p><strong>Manager:</strong> {{ employee.manager.full_name if employee.manager else "—" }}</p>
+  <p><strong>Status:</strong> <span class="badge badge-{{ employee.status.value }}">{{ employee.status.value }}</span></p>
+  <p><strong>Date Hired:</strong> {{ employee.date_hired }}</p>
+  <p><strong>Email:</strong> {{ employee.user.email }}</p>
+  <a class="btn btn-secondary" href="{{ url_for('employees.edit_employee', employee_id=employee.id) }}">Edit</a>
+  <a class="btn btn-secondary" href="{{ url_for('documents.list_documents', employee_id=employee.id) }}">Documents</a>
+</div>
+{% endblock %}

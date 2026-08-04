@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}Reports{% endblock %}
+{% block content %}
+<h1>Reports</h1>
+<div class="card">
+  <a class="btn btn-primary" href="{{ url_for('reports.attendance_report') }}">Attendance Report</a>
+  <a class="btn btn-primary" href="{{ url_for('reports.leave_summary_report') }}">Leave Summary Report</a>
+</div>
+{% endblock %}

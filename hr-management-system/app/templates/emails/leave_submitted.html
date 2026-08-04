@@ -1,0 +1,8 @@
+<p>Hello,</p>
+<p>{{ leave_request.employee.full_name }} has submitted a leave request:</p>
+<ul>
+  <li>Type: {{ leave_request.leave_type.name }}</li>
+  <li>Dates: {{ leave_request.start_date }} to {{ leave_request.end_date }} ({{ leave_request.total_days }} days)</li>
+  <li>Reason: {{ leave_request.reason or "—" }}</li>
+</ul>
+<p>Please review it in the HR system.</p>

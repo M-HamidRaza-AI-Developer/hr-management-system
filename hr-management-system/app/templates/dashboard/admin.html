@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+
+<div class="hero-bar">
+  <div>
+    <h1>Welcome, {{ current_user.employee.full_name if current_user.employee else current_user.email }}</h1>
+    <p class="hero-date">{{ today.strftime("%A, %B %d, %Y") }}</p>
+  </div>
+  <form class="hero-search" method="GET" action="{{ url_for('employees.list_employees') }}">
+    <span>🔍</span>
+    <input type="text" name="q" placeholder="Search employees...">
+  </form>
+</div>
+
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="stat-icon stat-icon-blue">👥</div>
+    <div style="flex:1;">
+      <div class="stat-value">{{ total_employees }}</div>
+      <div class="stat-label">Active Employees</div>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon stat-icon-purple">🏢</div>
+    <div style="flex:1;">
+      <div class="stat-value">{{ total_departments }}</div>
+      <div class="stat-label">Departments</div>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon stat-icon-amber">🗓️</div>
+    <div style="flex:1;">
+      <div class="stat-value">{{ pending_leave_count }}</div>
+      <div class="stat-label">Pending Leave Requests</div>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon stat-icon-green">🕒</div>
+    <div style="flex:1;">
+      <div class="stat-value">{{ today_present_count }}</div>
+      <div class="stat-label">Checked In Today</div>
+    </div>
+  </div>
+</div>
+
+<div class="dashboard-grid">
+
+  <div class="card">
+    <div class="card-header"><h3>Today's Attendance</h3></div>
+    <div class="card-body">
+      <div class="donut-wrap" style="--present: {{ present_percent }};">
+        <div class="donut">
+          <div class="donut-center">
+            <b>{{ present_percent }}%</b>
+            <small>Present</small>
+          </div>
+        </div>
+        <div class="donut-legend">
+          <div class="donut-legend-item"><span class="donut-dot present"></span> Present ({{ present_percent }}%)</div>
+          <div class="donut-legend-item"><span class="donut-dot rest"></span> Not Checked In ({{ 100 - present_percent }}%)</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <h3>Recent Leave Requests</h3>
+      <a href="{{ url_for('leave.pending_approvals') }}" class="card-header-action">View all</a>
+    </div>
+    <div class="card-body no-padding">
+      <table>
+        <tr><th>Employee</th><th>Type</th><th>Dates</th><th>Status</th></tr>
+        {% for r in recent_company_leave_requests %}
+        <tr>
+          <td>
+            <div class="name-cell">
+              <div class="name-avatar">{{ r.employee.first_name[0] }}{{ r.employee.last_name[0] }}</div>
+              {{ r.employee.full_name }}
+            </div>
+          </td>
+          <td>{{ r.leave_type.name }}</td>
+          <td>{{ r.start_date }} – {{ r.end_date }}</td>
+          <td><span class="badge badge-{{ r.status.value }}">{{ r.status.value }}</span></td>
+        </tr>
+        {% else %}
+        <tr><td colspan="4" class="empty-row">No leave requests yet.</td></tr>
+        {% endfor %}
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<div class="card">
+  <div class="card-header"><h3>Quick Actions</h3></div>
+  <div class="card-body quick-actions">
+    <a class="btn btn-primary" href="{{ url_for('leave.pending_approvals') }}">Review Pending Leave</a>
+    <a class="btn btn-secondary" href="{{ url_for('employees.create_employee') }}">+ Add Employee</a>
+    <a class="btn btn-secondary" href="{{ url_for('departments.create_department') }}">+ Add Department</a>
+    <a class="btn btn-secondary" href="{{ url_for('payroll.list_payroll') }}">Run Payroll</a>
+    <a class="btn btn-secondary" href="{{ url_for('reports.index') }}">Generate Reports</a>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Departments{% endblock %}
+{% block content %}
+<h1>Departments</h1>
+<a class="btn btn-primary" href="{{ url_for('departments.create_department') }}">+ Add Department</a>
+<table style="margin-top: 16px;">
+  <tr><th>Name</th><th>Manager</th><th>Employees</th><th></th></tr>
+  {% for d in departments %}
+  <tr>
+    <td>{{ d.name }}</td>
+    <td>{{ d.manager.full_name if d.manager else "—" }}</td>
+    <td>{{ d.employees|length }}</td>
+    <td><a href="{{ url_for('departments.edit_department', department_id=d.id) }}">Edit</a></td>
+  </tr>
+  {% endfor %}
+</table>
+{% endblock %}

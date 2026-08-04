@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}My Payslips{% endblock %}
+{% block content %}
+<h1>My Payslips</h1>
+<table>
+  <tr><th>Period</th><th>Net Salary</th><th>Status</th><th></th></tr>
+  {% for r in records %}
+  <tr>
+    <td>{{ r.year }}-{{ "%02d"|format(r.month) }}</td>
+    <td>{{ r.net_salary }}</td>
+    <td><span class="badge badge-{{ r.status.value }}">{{ r.status.value }}</span></td>
+    <td>{% if r.payslip_pdf_path %}<a href="{{ url_for('payroll.download_payslip', record_id=r.id) }}">Download</a>{% endif %}</td>
+  </tr>
+  {% else %}
+  <tr><td colspan="4">No payslips yet.</td></tr>
+  {% endfor %}
+</table>
+{% endblock %}

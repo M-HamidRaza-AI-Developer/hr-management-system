@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Attendance{% endblock %}
+{% block content %}
+<h1>Attendance</h1>
+<form method="GET" style="margin-bottom: 16px;">
+  <select name="employee_id" onchange="this.form.submit()">
+    <option value="">All Employees</option>
+    {% for e in employees %}
+    <option value="{{ e.id }}" {% if employee_id == e.id %}selected{% endif %}>{{ e.full_name }}</option>
+    {% endfor %}
+  </select>
+</form>
+<table>
+  <tr><th>Employee</th><th>Date</th><th>Status</th><th>Check In</th><th>Check Out</th><th>Hours</th></tr>
+  {% for r in pagination.items %}
+  <tr>
+    <td>{{ r.employee.full_name }}</td>
+    <td>{{ r.date }}</td>
+    <td><span class="badge badge-{{ r.status.value }}">{{ r.status.value }}</span></td>
+    <td>{{ r.check_in.strftime("%H:%M") if r.check_in else "-" }}</td>
+    <td>{{ r.check_out.strftime("%H:%M") if r.check_out else "-" }}</td>
+    <td>{{ r.hours_worked or "-" }}</td>
+  </tr>
+  {% else %}
+  <tr><td colspan="6">No records found.</td></tr>
+  {% endfor %}
+</table>
+{% endblock %}

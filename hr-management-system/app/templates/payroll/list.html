@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Payroll{% endblock %}
+{% block content %}
+<h1>Payroll</h1>
+<form method="POST" action="{{ url_for('payroll.generate') }}" class="card">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <div class="form-group"><label>Year</label><input type="number" name="year" value="2026" required></div>
+  <div class="form-group"><label>Month</label><input type="number" name="month" min="1" max="12" value="7" required></div>
+  <button class="btn btn-primary" type="submit">Generate Payroll</button>
+</form>
+<table>
+  <tr><th>Employee</th><th>Period</th><th>Gross</th><th>Net</th><th>Status</th><th></th></tr>
+  {% for r in records %}
+  <tr>
+    <td>{{ r.employee.full_name }}</td>
+    <td>{{ r.year }}-{{ "%02d"|format(r.month) }}</td>
+    <td>{{ r.gross_salary }}</td>
+    <td>{{ r.net_salary }}</td>
+    <td><span class="badge badge-{{ r.status.value }}">{{ r.status.value }}</span></td>
+    <td>
+      {% if r.status.value == "draft" %}
+      <form method="POST" action="{{ url_for('payroll.approve', record_id=r.id) }}" style="display:inline;">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button class="btn btn-secondary" type="submit">Approve</button>
+      </form>
+      {% endif %}
+      {% if r.payslip_pdf_path %}
+      <a href="{{ url_for('payroll.download_payslip', record_id=r.id) }}">Payslip</a>
+      {% endif %}
+    </td>
+  </tr>
+  {% else %}
+  <tr><td colspan="6">No payroll records for this period.</td></tr>
+  {% endfor %}
+</table>
+{% endblock %}

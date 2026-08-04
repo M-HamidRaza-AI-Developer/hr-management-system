@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}{{ "Edit" if employee else "New" }} Employee{% endblock %}
+{% block content %}
+<h1>{{ "Edit" if employee else "New" }} Employee</h1>
+<form method="POST" class="card">
+  {{ form.hidden_tag() }}
+  <div class="form-group">{{ form.employee_code.label }}{{ form.employee_code() }}</div>
+  <div class="form-group">{{ form.first_name.label }}{{ form.first_name() }}</div>
+  <div class="form-group">{{ form.last_name.label }}{{ form.last_name() }}</div>
+  <div class="form-group">{{ form.email.label }}{{ form.email() }}</div>
+  <div class="form-group">{{ form.phone.label }}{{ form.phone() }}</div>
+  <div class="form-group">{{ form.job_title.label }}{{ form.job_title() }}</div>
+  <div class="form-group">{{ form.date_hired.label }}{{ form.date_hired() }}</div>
+  <div class="form-group">{{ form.department_id.label }}{{ form.department_id() }}</div>
+  <div class="form-group">{{ form.manager_id.label }}{{ form.manager_id() }}</div>
+  <div class="form-group">{{ form.status.label }}{{ form.status() }}</div>
+  <div class="form-group">{{ form.role.label }}{{ form.role() }}</div>
+  <div class="form-group">{{ form.initial_password.label }}{{ form.initial_password() }}
+    <small>{{ "Leave blank to keep current password." if employee else "Required for new employees." }}</small>
+  </div>
+  {{ form.submit(class="btn btn-primary") }}
+</form>
+{% endblock %}

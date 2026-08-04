@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}Leave Summary Report{% endblock %}
+{% block content %}
+<h1>Leave Summary Report</h1>
+<form method="POST" class="card">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <div class="form-group"><label>Year</label><input type="number" name="year" value="2026" required></div>
+  <button class="btn btn-primary" type="submit">Generate PDF</button>
+</form>
+{% endblock %}

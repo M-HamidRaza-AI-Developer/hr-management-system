@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% block title %}HR System — Simplify Your Workforce Management{% endblock %}
+{% block content %}
+<div class="landing">
+
+  <header class="landing-nav">
+    <div class="landing-brand">HR<span>System</span></div>
+    <div class="landing-nav-actions">
+      <a href="{{ url_for('auth.login') }}" class="btn btn-ghost">Log In</a>
+      <a href="{{ url_for('auth.signup') }}" class="btn btn-primary">Sign Up</a>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="hero-text">
+      <span class="hero-eyebrow">All-in-one HR Platform</span>
+      <h1>Manage your entire workforce from one clean dashboard</h1>
+      <p>
+        Employees, attendance, leave, payroll, and documents — all in a single,
+        secure system built for teams of any size. No spreadsheets, no chasing
+        approvals over email.
+      </p>
+      <div class="hero-actions">
+        <a href="{{ url_for('auth.signup') }}" class="btn btn-primary btn-lg">Get Started — It's Free</a>
+        <a href="{{ url_for('auth.login') }}" class="btn btn-secondary btn-lg">Log In</a>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="hero-card">
+        <div class="hero-card-row"><span></span><span></span></div>
+        <div class="hero-card-row wide"></div>
+        <div class="hero-card-stats">
+          <div class="hero-stat"><b>128</b><small>Employees</small></div>
+          <div class="hero-stat"><b>96%</b><small>Attendance</small></div>
+          <div class="hero-stat"><b>12</b><small>Pending Leave</small></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="features">
+    <h2>Everything HR needs, in one place</h2>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">👥</div>
+        <h3>Employee Management</h3>
+        <p>Complete employee profiles, departments, and reporting lines — organized and searchable.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🕒</div>
+        <h3>Attendance Tracking</h3>
+        <p>Self-service check-in/check-out with a full history and manager oversight.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🗓️</div>
+        <h3>Leave Management</h3>
+        <p>Apply, approve, and track leave balances automatically — no more paper forms.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">💰</div>
+        <h3>Payroll</h3>
+        <p>Automated monthly payroll generation with downloadable PDF payslips.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📄</div>
+        <h3>Document Storage</h3>
+        <p>Securely store contracts, IDs, and certificates against each employee record.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🔒</div>
+        <h3>Role-Based Access</h3>
+        <p>Admin, HR, and Employee roles keep sensitive data visible only to the right people.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta">
+    <h2>Ready to simplify HR for your team?</h2>
+    <a href="{{ url_for('auth.signup') }}" class="btn btn-primary btn-lg">Create Your Account</a>
+  </section>
+
+  <footer class="landing-footer">
+    <span>&copy; 2026 HR System. All rights reserved.</span>
+    <button type="button" class="link-btn" data-open-terms>Terms &amp; Conditions</button>
+  </footer>
+</div>
+
+{% include "partials/terms_modal.html" %}
+{% endblock %}

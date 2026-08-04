@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+
+<div class="hero-bar">
+  <div>
+    <h1>Welcome{% if employee %}, {{ employee.first_name }}{% endif %} 👋</h1>
+    <p class="hero-date">{{ today.strftime("%A, %B %d, %Y") }}</p>
+  </div>
+</div>
+
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="stat-icon stat-icon-blue">🕒</div>
+    <div style="flex:1;">
+      <div class="stat-value">
+        {% if today_attendance and today_attendance.check_in %}
+          {{ today_attendance.check_in.strftime("%H:%M") }}
+        {% else %}
+          —
+        {% endif %}
+      </div>
+      <div class="stat-label">Checked In Today</div>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon stat-icon-amber">🗓️</div>
+    <div style="flex:1;">
+      <div class="stat-value">{{ pending_leave_count or 0 }}</div>
+      <div class="stat-label">Pending Leave Requests</div>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon stat-icon-green">✅</div>
+    <div style="flex:1;">
+      <div class="stat-value">{{ approved_leave_count or 0 }}</div>
+      <div class="stat-label">Approved Leave This Year</div>
+    </div>
+  </div>
+</div>
+
+<div class="dashboard-grid">
+
+  <div class="card">
+    <div class="card-header">
+      <h3>Today's Attendance</h3>
+    </div>
+    <div class="card-body">
+      {% if today_attendance and today_attendance.check_in %}
+        <div class="attendance-status">
+          <span class="badge badge-present">Checked In</span>
+          <span class="attendance-time">at {{ today_attendance.check_in.strftime("%H:%M") }}</span>
+          {% if today_attendance.check_out %}
+            <span class="attendance-time"> · Checked out at {{ today_attendance.check_out.strftime("%H:%M") }}</span>
+          {% endif %}
+        </div>
+        {% if not today_attendance.check_out %}
+        <form method="POST" action="{{ url_for('attendance.check_out') }}" class="mt-16">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button class="btn btn-secondary" type="submit">Check Out</button>
+        </form>
+        {% else %}
+        <p class="muted mt-16">You've completed attendance for today.</p>
+        {% endif %}
+      {% else %}
+        <p class="muted">You haven't checked in yet today.</p>
+        <form method="POST" action="{{ url_for('attendance.check_in') }}" class="mt-16">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button class="btn btn-primary" type="submit">Check In</button>
+        </form>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <h3>Recent Leave Requests</h3>
+      <a href="{{ url_for('leave.my_leave_requests') }}" class="card-header-action">Apply for leave</a>
+    </div>
+    <div class="card-body no-padding">
+      <table>
+        <tr><th>Type</th><th>Dates</th><th>Status</th></tr>
+        {% for r in recent_leave_requests %}
+        <tr>
+          <td>{{ r.leave_type.name }}</td>
+          <td>{{ r.start_date }} – {{ r.end_date }}</td>
+          <td><span class="badge badge-{{ r.status.value }}">{{ r.status.value }}</span></td>
+        </tr>
+        {% else %}
+        <tr><td colspan="3" class="empty-row">No leave requests yet.</td></tr>
+        {% endfor %}
+      </table>
+    </div>
+    <div class="card-footer">
+      <a href="{{ url_for('leave.my_leave_requests') }}">View all / apply for leave →</a>
+    </div>
+  </div>
+
+</div>
+{% endblock %}
