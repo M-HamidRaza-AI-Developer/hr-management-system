@@ -38,6 +38,16 @@ worker.py           # RQ worker entrypoint
 wsgi.py             # App entrypoint for gunicorn
 ```
 
+## Default Admin
+
+On first startup a default admin account is created automatically:
+
+- **Username:** `hamid`
+- **Password:** `hamid123`
+
+Change this password before any real deployment. You can also click **Sign Up**
+to create a regular employee account.
+
 ## Quickstart (Docker)
 
 ```bash
@@ -47,53 +57,65 @@ docker compose exec web flask seed-db         # seed leave types + default depar
 ```
 
 Tables are created automatically on first startup — no migration step needed.
-A default admin account is also seeded automatically:
-
-- **Username:** `hamid`
-- **Password:** `hamid123`
-
-Visit http://localhost:5000 — you'll land on the public homepage. Click **Log In**
-and use the admin credentials above, or click **Sign Up** to create a regular
-employee account.
+Visit http://localhost:5000 and click **Log In**.
 
 ## Quickstart (local, without Docker)
 
-Requires a local PostgreSQL and Redis instance.
+Requires a local PostgreSQL instance. Redis is optional (see notes below).
 
+### 1. Environment
+
+Linux / macOS:
 ```bash
 python -m venv venv && source venv/bin/activate
 pip install -r requirements.txt
-cp .env.example .env        # point DATABASE_URL / REDIS_URL at your local services
-
-flask seed-db                # seeds leave types + default department
-                              # (tables + the default admin user "hamid"/"hamid123"
-                              #  are created automatically on first run)
-
-flask run                    # web app
-python worker.py             # in a second terminal — background job worker
 ```
 
-## Running Tests
+Windows (PowerShell):
+```powershell
+python -m venv myenv
+.\myenv\Scripts\Activate.ps1
+pip install -r requirements.txt
+```
 
-Tests use an isolated, per-test SQLite database — no external services required:
+### 2. Create the PostgreSQL database
+
+Open `psql` (SQL Shell) as the `postgres` user and run:
+
+```sql
+CREATE USER hr_user WITH PASSWORD 'hr_password';
+CREATE DATABASE hr_management OWNER hr_user;
+\c hr_management
+GRANT ALL ON SCHEMA public TO hr_user;
+```
+
+### 3. Configure `.env`
+
+Copy `.env.example` to `.env`. When running **outside Docker**, the hosts must be
+`localhost` (the names `db` and `redis` only exist inside the Docker network):
+
+```
+DATABASE_URL=postgresql://hr_user:hr_password@localhost:5432/hr_management
+REDIS_URL=redis://localhost:6379/0
+```
+
+### 4. Seed and run
 
 ```bash
-pip install -r requirements.txt
-pytest -v
+flask seed-db      # seeds leave types + default department (safe to re-run)
+flask run          # web app at http://127.0.0.1:5000
+python worker.py   # optional, in a second terminal: background job worker
 ```
 
-## Notes on Design Decisions
+Log in with the default admin (`hamid` / `hamid123`).
 
-- **`User` vs `Employee`** are separate models. Every `Employee` has exactly one `User` (login identity + role), but this keeps room for pure-system accounts that aren't on the payroll.
-- **RBAC** is enforced at the route layer via `@roles_required(...)` and `@self_or_roles_required(...)` decorators — the latter lets an employee see their own records (e.g. payslips) while still gating HR/Admin-wide access.
-- **Background jobs** (payroll generation, emails) are dispatched to Redis/RQ so slow work never blocks a web request. Each falls back to a synchronous call if Redis is unreachable, so the app still works in a minimal dev setup without the worker running.
-- **Audit log** entries are added to the session but not committed independently — they ride along in the same transaction as the action they're logging, so you never get an audit entry for a write that didn't actually happen.
+**Redis on Windows:** Redis does not run natively on Windows. The app still works
+without it, because emails and payroll fall back to synchronous execution when Redis
+is unreachable. Use Docker, WSL, or Memurai if you want the background worker.
 
-## What's Scaffolded vs. What You'll Want to Extend
+## Troubleshooting
 
-This is a complete, working skeleton with one fully fleshed-out reference module (`employees`) and working — but intentionally lean — implementations of the rest. Natural next steps:
-- Flesh out template styling / add a proper design system
-- Add pagination to more list views (attendance, leave, payroll)
-- Expand test coverage (payroll generation, document upload, department hierarchy)
-- Add email templates styling, and a "forgot password" flow
-- Add per-department leave-approval routing (currently HR/Admin approve everything)
+| Error / symptom | Cause and fix |
+|---|---|
+| `could not translate host name "db"` | `.env` uses the Docker hostname. Change `db` to `localhost` in `DATABASE_URL`. |
+| `connection to server at "localhost" failed: Connection refused` | PostgreSQL is not running. Start the
